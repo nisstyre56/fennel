@@ -2,11 +2,11 @@
 
 from parsley import makeGrammar
 from ometa.runtime import ParseError
-from sys import argv
+
 import attr
 import operator as op
 
-def lookup(env):
+def environment(env):
     return lambda ident: env.get(ident, False)
 
 @attr.s
@@ -37,7 +37,7 @@ prelude = {
 
 @attr.s
 class LIdent():
-    value = attr.ib(convert=lookup(prelude))
+    value = attr.ib(convert=environment(prelude))
 
 identChars = "+-_-=?~!@$*></.%^&"
 
@@ -57,6 +57,8 @@ expression = makeGrammar("""
     value = float|integer|identifier
 
     application = ws '(' ws value:name ws <(value|application)*:ids> ws ')' ws -> App(name, ids)
+
+    expression = value|application
 
     """, {
             "identChars" : identChars,
@@ -80,5 +82,11 @@ def evaluate(exp):
     else:
         return exp
 
-#print(expression(" ".join(argv[1:])).application())
-print(evaluate(expression(" ".join(argv[1:])).application()))
+def repl():
+    while True:
+        parsed = expression(input("> ")).expression()
+        print(parsed)
+        print(evaluate(parsed))
+
+if __name__ == "__main__":
+    repl()
