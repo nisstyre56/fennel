@@ -41,26 +41,8 @@ class LIdent():
 
 identChars = "+-_-=?~!@$*></.%^&"
 
-expression = makeGrammar("""
-    integer = ws (<digit+>:intv) ws -> LInt(intv)
-
-    float = ws (<integer>:leftv) "." (<integer>:rightv) ws -> LFloat("%s.%s" % (leftv, rightv))
-
-    left_paren = '('
-
-    right_paren = ')'
-
-    identifierChar = letter|(anything:x ?(x in identChars))
-
-    identifier = ws (<(identifierChar)+>:ident) ws -> LIdent(ident)
-
-    value = float|integer|identifier
-
-    application = ws '(' ws value:name ws <(value|application)*:ids> ws ')' ws -> App(name, ids)
-
-    expression = value|application
-
-    """, {
+with open("./syntax.parsley", "r") as syntax:
+    expression = makeGrammar(syntax.read(), {
             "identChars" : identChars,
             "App" : App,
             "LIdent" : LIdent,
