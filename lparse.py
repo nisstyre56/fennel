@@ -6,12 +6,8 @@ from sys import argv
 import attr
 import operator as op
 
-ops = {
-        "*" : op.mul,
-        "-" : op.sub,
-        "+" : op.add,
-        "/" : op.truediv
-        }
+def lookup(env):
+    return lambda ident: env.get(ident, False)
 
 @attr.s
 class App():
@@ -30,9 +26,18 @@ class LInt():
 class LFloat():
     value = attr.ib(convert=float)
 
+prelude = {
+        "*" : op.mul,
+        "-" : op.sub,
+        "+" : op.add,
+        "/" : op.truediv,
+        "a" : LInt(34),
+        "double" : lambda a: a*a
+        }
+
 @attr.s
 class LIdent():
-    value = attr.ib()
+    value = attr.ib(convert=lookup(prelude))
 
 identChars = "+-_-=?~!@$*></.%^&"
 
@@ -63,9 +68,17 @@ expression = makeGrammar("""
 
 def evaluate(exp):
     if isinstance(exp, App):
-        return ops[exp.proc](*map(evaluate, exp.params))
+        return evaluate(exp.proc.value)(*map(evaluate, exp.params))
+    elif isinstance(exp, LInt):
+        return exp.value
+    elif isinstance(exp, LFloat):
+        return exp.value
+    elif isinstance(exp, LStr):
+        return exp.value
+    elif isinstance(exp, LIdent):
+        return evaluate(exp.value)
     else:
-        return int(exp)
+        return exp
 
-print(expression(" ".join(argv[1:])).application())
-#print(evaluate(expression(" ".join(argv[1:])).application()))
+#print(expression(" ".join(argv[1:])).application())
+print(evaluate(expression(" ".join(argv[1:])).application()))
