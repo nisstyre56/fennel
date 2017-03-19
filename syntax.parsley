@@ -1,3 +1,5 @@
+operator = anything:x ?(x in '+*/-') -> LOp(x)
+
 integer = ws (<digit+>:intv) ws -> LInt(intv)
 
 float = ws (<integer>:leftv) "." (<integer>:rightv) ws -> LFloat("%s.%s" % (leftv, rightv))
@@ -14,4 +16,7 @@ value = float|integer|identifier
 
 application = ws '(' ws value:name ws <(value|application)*:ids> ws ')' ws -> App(name, ids)
 
+infixexpr = (ws (value|application) ws operator ws (value|application))+
+
 expression = value|application
+

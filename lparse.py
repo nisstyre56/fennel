@@ -34,9 +34,6 @@ prelude = {
         "a" : LInt(34),
         "double" : lambda a: a*a
         }
-@attr.s
-class LOp():
-    value = attr.ib(convert=environment(prelude))
 
 @attr.s
 class LIdent():
@@ -50,8 +47,7 @@ with open("./syntax.parsley", "r") as syntax:
             "App" : App,
             "LIdent" : LIdent,
             "LInt" : LInt,
-            "LFloat" : LFloat,
-            "LOp" : LOp
+            "LFloat" : LFloat
          })
 
 def evaluate(exp):
@@ -67,14 +63,6 @@ def evaluate(exp):
         return evaluate(exp.value)
     else:
         return exp
-
-# examples
-# (+ 2 a)
-# (double a)
-# (* 0.3 (double a))
-# a
-# double
-# (/ 34 (+ 2 3))
 
 def repl():
     while True:
