@@ -1,8 +1,8 @@
 operator = anything:x ?(x in '+*/-') -> LOp(x)
 
-integer = ws (<digit+>:intv) ws -> LInt(intv)
+integer = ws ('-'|'+'?):sign ws (<digit+>:intv) ws -> LInt(intv, sign)
 
-float = ws (<integer>:leftv) "." (<integer>:rightv) ws -> LFloat("%s.%s" % (leftv, rightv))
+float = ws ('-'|'+'?):sign ws (<digit>?:leftv) "." (<digit>:rightv) ws -> LFloat("%s.%s" % (leftv if leftv is not None else "0", rightv), sign)
 
 left_paren = '('
 
@@ -16,7 +16,4 @@ value = float|integer|identifier
 
 application = ws '(' ws value:name ws <(value|application)*:ids> ws ')' ws -> App(name, ids)
 
-infixexpr = (ws (value|application) ws operator ws (value|application))+
-
 expression = value|application
-

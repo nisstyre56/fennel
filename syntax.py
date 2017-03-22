@@ -18,20 +18,34 @@ class App():
 class LStr():
     value = attr.ib()
 
-@attr.s
-class LInt():
-    value = attr.ib(convert=int)
+class Number():
+    @property
+    def value(self):
+        if self.sign == "-":
+            return -self.number
+        elif self.sign == "+":
+            return +self.number
+        elif self.sign == "None":
+            return self.number
+        else:
+            raise ValueError("not a valid number")
 
 @attr.s
-class LFloat():
-    value = attr.ib(convert=float)
+class LInt(Number):
+    number = attr.ib(convert=int)
+    sign = attr.ib(convert=str)
+
+@attr.s
+class LFloat(Number):
+    number = attr.ib(convert=float)
+    sign = attr.ib(convert=str)
 
 prelude = {
         "*" : op.mul,
         "-" : op.sub,
         "+" : op.add,
         "/" : op.truediv,
-        "a" : LInt(34),
+        "a" : LInt(34, "+"),
         "double" : lambda a: a*a
         }
 @attr.s
