@@ -2,7 +2,7 @@ operator = anything:x ?(x in '+*/-') -> LOp(x)
 
 integer = ws ('-'|'+'?):sign ws (<digit+>:intv) ws -> LInt(intv, sign)
 
-float = ws ('-'|'+'?):sign ws (<digit>?:leftv) "." (<digit>:rightv) ws -> LFloat("%s.%s" % (leftv if leftv is not None else "0", rightv), sign)
+float = ws ('-'|'+'?):sign ws (<digit+>?:leftv) "." (<digit+>:rightv) ws -> LFloat("%s.%s" % (leftv if leftv is not None else "0", rightv), sign)
 
 left_paren = '('
 
@@ -14,6 +14,6 @@ identifier = ws (<(identifierChar)+>:ident) ws -> LIdent(ident)
 
 value = float|integer|identifier
 
-application = ws '(' ws value:name ws <(value|application)*:ids> ws ')' ws -> App(name, ids)
+application = ws '(' ws identifier:name ws <(value|application)*:ids> ws ')' ws -> App(name, ids)
 
 expression = value|application
